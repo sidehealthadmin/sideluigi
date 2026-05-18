@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F8F9FC;
+  --bg2: #F1F3F8;
+  --bg3: #E8ECF4;
+  --surface: #FFFFFF;
+  --border: #E2E6F0;
+  --border2: #C8CDD9;
+  --text: #0C0F1A;
+  --text2: #2D3148;
+  --text3: #606880;
+  --text4: #9CA3B4;
+  --indigo: #4F5FD4;
+  --indigo-light: #6472E8;
+  --indigo-bg: #F0F1FF;
+  --indigo-border: #C7CBFF;
+  --red: #E83E3E;
+  --red-bg: #FEF2F2;
+  --red-border: #FECACA;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --green-border: #BBF7D0;
+  --amber: #D97706;
+  --amber-bg: #FFFBEB;
+  --amber-border: #FDE68A;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: 'Geist', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Side Health mono label utility */
+.sh-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* Side Health tag styles */
+.sh-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border: 1px solid;
+}
+
+/* Side Health button base */
+.sh-btn {
+  width: 100%;
+  padding: 12px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.1s;
+}
+
+.sh-btn:active {
+  transform: scale(0.98);
+}
+
+.sh-btn-primary {
+  background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+  color: #fff;
+  border-color: var(--indigo);
+  box-shadow: 0 2px 8px rgba(79, 95, 212, 0.25);
+}
+
+.sh-btn-primary:hover {
+  background: linear-gradient(135deg, #5A6AE0, #7080F0);
+}
+
+.sh-btn-outline {
+  background: var(--surface);
+  color: var(--text2);
+  border-color: var(--border);
+}
+
+.sh-btn-outline:hover {
+  background: var(--bg2);
+  border-color: var(--border2);
+}
+
+/* Side Health card */
+.sh-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 14px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.sh-card:hover {
+  background: var(--bg);
+  border-color: var(--border2);
+}
+
+/* Gradient header bar */
+.sh-gradient-header {
+  background: linear-gradient(135deg, #4F5FD4 0%, #6472E8 60%, #7C8AF0 100%);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

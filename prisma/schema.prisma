@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Case {
+  id               String   @id @default(cuid())
+  patientName      String
+  patientAddress   String?
+  patientState     String?
+  insurerName      String
+  denialDate       String
+  medication       String
+  condition        String?
+  denialType       String   // step_therapy | medical_necessity | formulary_exclusion
+  claimNumber      String?
+  planType         String?  // ACA | employer | Medicaid | Medicare
+  duration         String?  // <6mo | 6-12mo | 1-3yr | 3yr+
+  intakeData       String   // JSON blob of all intake answers
+  generatedLetter  String?
+  pdfPath          String?
+  status           String   @default("pending_review") // pending_review | approved | rejected
+  reviewNotes      String?
+  denialNoticePath String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
