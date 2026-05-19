@@ -88,6 +88,8 @@ export default function IntakePage() {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<IntakeFormData>(INITIAL_DATA)
   const [caseId, setCaseId] = useState<string | null>(null)
+  const [letterText, setLetterText] = useState<string | null>(null)
+  const [pdfBase64, setPdfBase64] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
   const updateData = useCallback((updates: Partial<IntakeFormData>) => {
@@ -142,6 +144,8 @@ export default function IntakePage() {
       const data = await response.json()
       if (data.success) {
         setCaseId(data.caseId)
+        setLetterText(data.letter || null)
+        setPdfBase64(data.pdfBase64 || null)
       } else {
         console.error('Generation returned error:', data.error)
       }
@@ -156,7 +160,7 @@ export default function IntakePage() {
   if (step === 10) {
     return (
       <div className="min-h-screen bg-bg">
-        <Step10Status isGenerating={isGenerating} caseId={caseId} />
+        <Step10Status isGenerating={isGenerating} caseId={caseId} letterText={letterText} pdfBase64={pdfBase64} />
       </div>
     )
   }
