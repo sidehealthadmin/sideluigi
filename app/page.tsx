@@ -18,23 +18,17 @@ export default function Home() {
           We are by your side — expert billing disputes and a retained attorney when they won&apos;t budge.
         </p>
 
-        {/* Value props */}
-        <div className="border border-border rounded-lg divide-y divide-border mb-10">
-          {[
-            { num: '01', label: 'Dispute letters', desc: 'Built from your bill, line by line' },
-            { num: '02', label: 'Attorney on standby', desc: 'Demand letter on firm letterhead' },
-            { num: '03', label: 'Pay only on savings', desc: '10% of what we recover for you' },
-          ].map((item) => (
-            <div key={item.num} className="flex items-center gap-4 px-5 py-4">
-              <span className="font-mono text-[10px] font-medium text-txt-4 flex-shrink-0">
-                {item.num}
-              </span>
-              <div>
-                <div className="text-[13px] font-medium text-txt mb-0.5">{item.label}</div>
-                <div className="text-[11.5px] text-txt-4">{item.desc}</div>
-              </div>
+        {/* Value prop */}
+        <div className="border border-border rounded-lg mb-10">
+          <div className="flex items-center gap-4 px-5 py-4">
+            <span className="font-mono text-[10px] font-medium text-txt-4 flex-shrink-0">
+              01
+            </span>
+            <div>
+              <div className="text-[13px] font-medium text-txt mb-0.5">Dispute letters</div>
+              <div className="text-[11.5px] text-txt-4">Built from your bill, line by line</div>
             </div>
-          ))}
+          </div>
         </div>
 
         {/* CTA */}
