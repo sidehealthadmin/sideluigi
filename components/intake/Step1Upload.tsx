@@ -12,6 +12,12 @@ interface ParsedFields {
   denialReasonPlain: string
   denialReason: string
   claimNumber?: string
+  lineItems?: Array<{ cptCode: string | null; description: string; billedAmount: number; isHospitalOutpatient: boolean }>
+  totalBilled?: number
+  insurancePaid?: number
+  patientOwes?: number
+  documentType?: string
+  providerName?: string
   confidence: string
 }
 
@@ -58,6 +64,8 @@ export default function Step1Upload({ data, onUpdate, onNext }: Props) {
         denialReason: parsed.denialReason || '',
         denialReasonPlain: parsed.denialReasonPlain || '',
         claimNumber: parsed.claimNumber || '',
+        providerName: parsed.providerName || '',
+        practiceName: parsed.providerName || '',
         denialNoticePath: '',
       })
     } catch (err: any) {
@@ -79,20 +87,30 @@ export default function Step1Upload({ data, onUpdate, onNext }: Props) {
     if (file) handleFile(file)
   }, [handleFile])
 
-  const fields: Array<{ key: keyof IntakeFormData; label: string; required?: boolean }> = [
-    { key: 'insurerName', label: 'Insurance company', required: true },
-    { key: 'patientName', label: 'Patient name', required: true },
-    { key: 'denialDate', label: 'Date of denial', required: true },
-    { key: 'medication', label: 'Medication or procedure denied', required: true },
-    { key: 'denialReasonPlain', label: 'Reason for denial', required: true },
-  ]
+  const isBillingDoc = parsedFields?.documentType === 'billing_statement' || parsedFields?.documentType === 'eob'
+
+  const fields: Array<{ key: keyof IntakeFormData; label: string; required?: boolean }> = isBillingDoc
+    ? [
+        { key: 'insurerName', label: 'Insurance company', required: true },
+        { key: 'patientName', label: 'Patient name', required: true },
+        { key: 'denialDate', label: 'Date of service', required: true },
+        { key: 'medication', label: 'Service or procedure billed', required: true },
+        { key: 'denialReasonPlain', label: 'Billing summary', required: true },
+      ]
+    : [
+        { key: 'insurerName', label: 'Insurance company', required: true },
+        { key: 'patientName', label: 'Patient name', required: true },
+        { key: 'denialDate', label: 'Date of denial', required: true },
+        { key: 'medication', label: 'Medication or procedure denied', required: true },
+        { key: 'denialReasonPlain', label: 'Reason for denial', required: true },
+      ]
 
   const canContinue = parsedFields !== null || (data.insurerName && data.patientName && data.denialDate && data.medication)
 
   return (
     <StepShell
-      title="Upload your denial notice to get started."
-      subtitle="This is the letter from your insurance company saying your claim was denied. It may have arrived by mail or through your patient portal."
+      title="Upload your document to get started."
+      subtitle="This can be a denial notice, a hospital bill, or an Explanation of Benefits (EOB). We'll read it and pull out the key details."
       onNext={onNext}
       nextDisabled={!canContinue}
     >
@@ -115,7 +133,7 @@ export default function Step1Upload({ data, onUpdate, onNext }: Props) {
             {isUploading ? (
               <div className="space-y-3">
                 <div className="w-10 h-10 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mx-auto" />
-                <p className="text-txt-2 font-medium">Reading your denial notice…</p>
+                <p className="text-txt-2 font-medium">Reading your document…</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -218,7 +236,7 @@ export default function Step1Upload({ data, onUpdate, onNext }: Props) {
               onClick={onNext}
               className="font-mono text-[10.5px] text-txt-4 hover:text-txt-3 underline underline-offset-2"
             >
-              I don't have my denial notice — enter details manually
+              I don't have my document — enter details manually
             </button>
           </div>
         )}

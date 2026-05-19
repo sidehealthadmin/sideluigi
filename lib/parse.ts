@@ -5,6 +5,13 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
+export interface ParsedLineItem {
+  cptCode: string | null
+  description: string
+  billedAmount: number
+  isHospitalOutpatient: boolean
+}
+
 export interface ParsedDenialNotice {
   insurerName: string
   patientName: string
@@ -13,21 +20,36 @@ export interface ParsedDenialNotice {
   denialReason: string
   denialReasonPlain: string
   claimNumber?: string
+  lineItems?: ParsedLineItem[]
+  totalBilled?: number
+  insurancePaid?: number
+  patientOwes?: number
+  documentType?: 'denial_notice' | 'billing_statement' | 'eob' | 'other'
+  providerName?: string
   confidence: 'high' | 'medium' | 'low'
 }
 
-const PARSE_PROMPT = `You are analyzing a health insurance denial notice document.
-Extract the following fields from the document. Return your answer as valid JSON only, with no additional text or explanation.
+const PARSE_PROMPT = `You are analyzing a health insurance or medical billing document. It may be one of:
+- An insurance denial notice (a letter denying coverage for a medication or procedure)
+- A hospital/medical billing statement (an itemized bill showing charges, insurance payments, and patient balance)
+- An Explanation of Benefits (EOB)
 
-Fields to extract:
+Extract the following fields from the document. Adapt your extraction based on the document type:
+
 {
-  "insurerName": "Name of the insurance company",
+  "insurerName": "Name of the insurance company (from denial letter header, or from 'Primary insurance' / 'Benefits Summary' on a bill)",
   "patientName": "Full name of the patient/member",
-  "denialDate": "Date the denial was issued (as a string, e.g. 'January 15, 2025')",
-  "medication": "Name of the medication or procedure that was denied",
-  "denialReason": "The official reason for denial as stated in the document",
-  "denialReasonPlain": "A plain-language explanation of the denial reason that a patient without medical knowledge would understand (1-2 sentences)",
-  "claimNumber": "Claim or case number if present, otherwise null",
+  "denialDate": "For denial letters: date the denial was issued. For bills: date of service. Format as a string, e.g. 'February 2, 2026'",
+  "medication": "For denial letters: the medication or procedure denied. For bills: the primary service or procedure billed (e.g. 'Emergency Room Visit', 'MRI', 'Surgery'). Include CPT code if shown.",
+  "denialReason": "For denial letters: the official reason for denial. For bills: a summary of the billing issue, e.g. 'Patient billed $X after insurance covered $Y of $Z total charges' with actual amounts from the document.",
+  "denialReasonPlain": "A plain-language explanation: For denials, explain why it was denied. For bills, explain the charges in simple terms, e.g. 'You were billed $6,032 for an ER visit. Your insurance (Blue Cross) paid $2,032.52, leaving you with $3,999.48 to pay.'",
+  "claimNumber": "Claim number, case number, or account number if present, otherwise null",
+  "lineItems": "Array of line items if the document is an itemized bill. Each item: { \"cptCode\": \"CPT code or null\", \"description\": \"Service description\", \"billedAmount\": 0.00, \"isHospitalOutpatient\": true/false }. Return null if no line items found.",
+  "totalBilled": "Total amount billed (before insurance), or null",
+  "insurancePaid": "Amount insurance covered/paid, or null",
+  "patientOwes": "Amount the patient owes (outstanding balance), or null",
+  "documentType": "One of: 'denial_notice', 'billing_statement', 'eob', 'other'",
+  "providerName": "Name of the hospital, clinic, or provider if shown, otherwise null",
   "confidence": "Your confidence in the extraction: 'high' if document clearly shows all fields, 'medium' if some fields were inferred, 'low' if document was unclear or incomplete"
 }
 
@@ -133,6 +155,12 @@ function parseClaudeResponse(message: Anthropic.Message): ParsedDenialNotice {
       denialReason: parsed.denialReason || '',
       denialReasonPlain: parsed.denialReasonPlain || '',
       claimNumber: parsed.claimNumber || undefined,
+      lineItems: Array.isArray(parsed.lineItems) ? parsed.lineItems : undefined,
+      totalBilled: parsed.totalBilled ? Number(parsed.totalBilled) : undefined,
+      insurancePaid: parsed.insurancePaid ? Number(parsed.insurancePaid) : undefined,
+      patientOwes: parsed.patientOwes ? Number(parsed.patientOwes) : undefined,
+      documentType: parsed.documentType || 'other',
+      providerName: parsed.providerName || undefined,
       confidence: (['high', 'medium', 'low'].includes(parsed.confidence) ? parsed.confidence : 'low') as 'high' | 'medium' | 'low',
     }
   } catch (err) {
