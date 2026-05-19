@@ -1,6 +1,4 @@
 import { PDFDocument, StandardFonts, rgb, PDFPage, PDFFont } from 'pdf-lib'
-import fs from 'fs'
-import path from 'path'
 
 interface PDFOptions {
   caseId: string
@@ -9,7 +7,6 @@ interface PDFOptions {
   insurerName: string
   medication: string
   denialDate: string
-  outputDir?: string
 }
 
 const LINE_HEIGHT = 16
@@ -40,15 +37,12 @@ function wrapText(text: string, font: PDFFont, fontSize: number, maxWidth: numbe
   return lines
 }
 
+/**
+ * Generate a PDF in memory and return the bytes as a base64 string.
+ * No filesystem writes — compatible with Vercel's read-only serverless environment.
+ */
 export async function generatePDF(options: PDFOptions): Promise<string> {
   const { caseId, letterText, patientName, insurerName, medication, denialDate } = options
-  const outputDir = options.outputDir || process.env.OUTPUT_DIR || './output'
-
-  // Ensure output directories exist
-  const appealsDir = path.join(process.cwd(), outputDir, 'appeals')
-  const approvedDir = path.join(process.cwd(), outputDir, 'approved')
-  fs.mkdirSync(appealsDir, { recursive: true })
-  fs.mkdirSync(approvedDir, { recursive: true })
 
   const pdfDoc = await PDFDocument.create()
   const regularFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
@@ -131,13 +125,11 @@ export async function generatePDF(options: PDFOptions): Promise<string> {
   y = PAGE_HEIGHT - MARGIN_TOP - 10
 
   // ---- Letter body ----
-  // Split the letter text into paragraphs and render
   const paragraphs = letterText.split(/\n\n+/)
 
   for (const paragraph of paragraphs) {
     if (!paragraph.trim()) continue
 
-    // Detect if this looks like a header line (short line at top = date, address, re: line)
     const isHeaderLine = paragraph.trim().length < 80 && !paragraph.includes('.')
 
     if (isHeaderLine) {
@@ -154,22 +146,8 @@ export async function generatePDF(options: PDFOptions): Promise<string> {
     }
   }
 
-  // ---- Save file ----
+  // ---- Return as base64 (no disk writes) ----
   const pdfBytes = await pdfDoc.save()
-  const filePath = path.join(appealsDir, `${caseId}.pdf`)
-  fs.writeFileSync(filePath, pdfBytes)
-
-  return filePath
-}
-
-export async function approvePDF(caseId: string, outputDir?: string): Promise<string> {
-  const baseDir = path.join(process.cwd(), outputDir || process.env.OUTPUT_DIR || './output')
-  const sourcePath = path.join(baseDir, 'appeals', `${caseId}.pdf`)
-  const destDir = path.join(baseDir, 'approved')
-  const destPath = path.join(destDir, `${caseId}.pdf`)
-
-  fs.mkdirSync(destDir, { recursive: true })
-  fs.copyFileSync(sourcePath, destPath)
-
-  return destPath
+  const base64 = Buffer.from(pdfBytes).toString('base64')
+  return base64
 }

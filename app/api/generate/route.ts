@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Generate PDF
-    let pdfPath: string | null = null
+    // Generate PDF (in memory, returns base64)
+    let pdfBase64: string | null = null
     try {
-      pdfPath = await generatePDF({
+      pdfBase64 = await generatePDF({
         caseId: caseRecord.id,
         letterText: letter,
         patientName: intakeData.patientName,
@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
         denialDate: intakeData.denialDate,
       })
 
-      // Update case with PDF path
+      // Update case to note PDF was generated
       await prisma.case.update({
         where: { id: caseRecord.id },
-        data: { pdfPath },
+        data: { pdfPath: `generated-${caseRecord.id}` },
       })
     } catch (pdfError) {
       console.error('PDF generation error:', pdfError)
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       caseId: caseRecord.id,
       letter,
       sections,
-      pdfPath,
+      pdfBase64,
     })
   } catch (error) {
     console.error('Generation error:', error)

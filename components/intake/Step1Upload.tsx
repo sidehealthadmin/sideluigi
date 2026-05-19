@@ -58,7 +58,7 @@ export default function Step1Upload({ data, onUpdate, onNext }: Props) {
         denialReason: parsed.denialReason || '',
         denialReasonPlain: parsed.denialReasonPlain || '',
         claimNumber: parsed.claimNumber || '',
-        denialNoticePath: result.filePath || '',
+        denialNoticePath: '',
       })
     } catch (err: any) {
       setUploadError(err.message || 'Something went wrong. Please try again.')

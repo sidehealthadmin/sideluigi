@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseDenialNotice } from '@/lib/parse'
-import path from 'path'
-import fs from 'fs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,15 +26,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Save uploaded file
-    const uploadDir = path.join(process.cwd(), 'output', 'uploads')
-    fs.mkdirSync(uploadDir, { recursive: true })
-    const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-    const filePath = path.join(uploadDir, fileName)
-
+    // Process file in memory (no disk writes — Vercel has read-only filesystem)
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
-    fs.writeFileSync(filePath, buffer)
 
     // Parse with Claude
     const parsed = await parseDenialNotice(buffer, file.type)
@@ -44,7 +36,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: parsed,
-      filePath: `/output/uploads/${fileName}`,
     })
   } catch (error) {
     console.error('Parse error:', error)
