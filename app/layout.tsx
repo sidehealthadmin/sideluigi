@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Side Health — Your Medical Billing Advocate',
-  description: 'Expert billing disputes and a retained attorney when they won\'t budge.',
+  description: 'Expert billing disputes when your medical bills don\'t add up.',
 }
 
 export default function RootLayout({

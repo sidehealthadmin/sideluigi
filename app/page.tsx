@@ -1,5 +1,33 @@
 import Link from 'next/link'
 
+function SideHealthLogo({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" className={className}>
+      {/* Cross / signal icon */}
+      <g transform="translate(90, 100)">
+        {/* Vertical pill — teal */}
+        <rect x="-22" y="-80" width="44" height="110" rx="22" fill="#5BC5C2" />
+        {/* Horizontal pill — blue */}
+        <rect x="-80" y="-22" width="110" height="44" rx="22" fill="#3B82C4" />
+        {/* Top-right rounded corner — blue, overlaps to form cross */}
+        <rect x="-22" y="-80" width="102" height="44" rx="22" fill="#3B82C4" />
+        {/* Signal waves */}
+        <g stroke="#ffffff" strokeWidth="3.5" fill="none" strokeLinecap="round">
+          <path d="M-12,10 Q-12,-2 -4,-10" />
+          <path d="M-20,18 Q-20,-2 -4,-18" />
+          <path d="M-28,26 Q-28,-2 -4,-26" />
+        </g>
+      </g>
+      {/* SIDE text */}
+      <text x="170" y="85" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="600" fontSize="72" fill="#2D3748" letterSpacing="6">SIDE</text>
+      {/* HEALTH text */}
+      <text x="170" y="155" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="600" fontSize="72" fill="#2D3748" letterSpacing="6">HEALTH</text>
+      {/* TM */}
+      <text x="488" y="85" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="400" fontSize="16" fill="#2D3748">™</text>
+    </svg>
+  )
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
@@ -7,15 +35,14 @@ export default function Home() {
         {/* Version label */}
         <p className="sh-label text-center mb-6">SIDE.HEALTH / v0.1</p>
 
-        {/* Wordmark */}
-        <h1 className="text-center text-3xl mb-3">
-          <span className="font-bold text-txt">Side</span>
-          <span className="font-light text-brand-600">Health</span>
-        </h1>
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <SideHealthLogo className="w-[320px] h-auto" />
+        </div>
 
         {/* Tagline */}
         <p className="text-center text-txt-3 text-[15px] leading-relaxed mb-10">
-          We are by your side — expert billing disputes and a retained attorney when they won&apos;t budge.
+          We are by your side — expert billing disputes when your medical bills don&apos;t add up.
         </p>
 
         {/* Value prop */}
