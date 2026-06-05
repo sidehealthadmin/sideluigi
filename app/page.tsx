@@ -1,32 +1,5 @@
 import Link from 'next/link'
-
-function SideHealthLogo({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Cross / signal icon */}
-      <g transform="translate(90, 100)">
-        {/* Vertical pill — teal */}
-        <rect x="-22" y="-80" width="44" height="110" rx="22" fill="#5BC5C2" />
-        {/* Horizontal pill — blue */}
-        <rect x="-80" y="-22" width="110" height="44" rx="22" fill="#3B82C4" />
-        {/* Top-right rounded corner — blue, overlaps to form cross */}
-        <rect x="-22" y="-80" width="102" height="44" rx="22" fill="#3B82C4" />
-        {/* Signal waves */}
-        <g stroke="#ffffff" strokeWidth="3.5" fill="none" strokeLinecap="round">
-          <path d="M-12,10 Q-12,-2 -4,-10" />
-          <path d="M-20,18 Q-20,-2 -4,-18" />
-          <path d="M-28,26 Q-28,-2 -4,-26" />
-        </g>
-      </g>
-      {/* SIDE text */}
-      <text x="170" y="85" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="600" fontSize="72" fill="#2D3748" letterSpacing="6">SIDE</text>
-      {/* HEALTH text */}
-      <text x="170" y="155" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="600" fontSize="72" fill="#2D3748" letterSpacing="6">HEALTH</text>
-      {/* TM */}
-      <text x="488" y="85" fontFamily="'Helvetica Neue',Helvetica,Arial,sans-serif" fontWeight="400" fontSize="16" fill="#2D3748">™</text>
-    </svg>
-  )
-}
+import Image from 'next/image'
 
 export default function Home() {
   return (
@@ -37,7 +10,13 @@ export default function Home() {
 
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <SideHealthLogo className="w-[320px] h-auto" />
+          <Image
+            src="/side-health-logo.png"
+            alt="Side Health"
+            width={320}
+            height={128}
+            priority
+          />
         </div>
 
         {/* Tagline */}
